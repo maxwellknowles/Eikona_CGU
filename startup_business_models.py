@@ -268,7 +268,7 @@ if eikona_choice == "Business Model Basics":
     transaction_cost = st.slider('Transaction Fee ($USD)...', 0.00, 5.00, 0.25, 0.05)
     st.subheader('Toggle Cost Basics')
     cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
-    server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
+    server_cost = st.slider('Estimated Server Costs/Month (Per User in $)...', 0.00, 5.00, 3.00, 0.10)
 
     l = []
     for i in uot.iterrows():
@@ -276,7 +276,7 @@ if eikona_choice == "Business Model Basics":
         users = i[1]['Users']
         ad_time = i[1]['AR Ad Time']
         revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
-        costs = cost_mint*users + server_cost*users
+        costs = cost_mint*users + server_cost*users*(year/12)
         tup=(year, users, ad_time, revenue, costs)
         l.append(tup)
     eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)', 'Costs'])
