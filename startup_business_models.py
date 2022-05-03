@@ -278,7 +278,7 @@ if eikona_choice == "Business Model Basics":
         users = i[1]['Users']
         ad_time = i[1]['AR Ad Time']
         revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
-        costs = cost_mint + server_cost + product_engineering + HR_accounting
+        costs = cost_mint*users + server_cost*users + product_engineering + HR_accounting
         tup=(year, users, ad_time, revenue, costs)
         l.append(tup)
     eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)', 'Costs'])
