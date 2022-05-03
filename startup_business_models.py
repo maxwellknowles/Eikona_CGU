@@ -240,6 +240,41 @@ if eikona_choice == "Industry User Growth":
 if eikona_choice == "Business Model Basics":
     st.header("Business Model Basics")
     
+    initial_people_involved = st.number_input('Number of initial players: ', min_value = 1, max_value = 100000000, value = 10000, step = 250)
+    user_growth_rate = st.slider('Rate of User Growth/Month: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.0, value = 0.5)
+    avg_min_month = st.slider('Average Minutes Walked in AR/Month: ', min_value = 0, max_value = 600, value = 300, step = 10)
+    st.write('_Equivalent to ' + str(float(avg_min_month/60)) + ' hours or ' + str(avg_min_month*60) + ' seconds_')
+    rate_per_sec_AR = st.slider('$EKO generated each second in AR ad-compatible space: ', min_value = 0.001, max_value = 5.0, value = 0.01)
+    x = (avg_min_month*60)*rate_per_sec_AR
+    rate_of_generation = x #rate of $EKO per month being generated
+
+    people_involved = initial_people_involved
+
+    #days = 1000
+    #total_coin = total_coin+people_involved*rate_of_generation*days
+    #v1 is the value that our coin worth
+    v1 = total_value*(percent_coin_owned/total_coin)
+    #v2 is the value of a single coin
+    v2 = v1/percent_coin_owned
+
+    #m is the amount of months it takes for The Reserve to be worth 1 dollar
+    m = (total_value/1000*percent_coin_owned-percent_coin_owned)/(rate_of_generation*people_involved*100)
+
+    v_ = []
+    uot = []
+    l = []
+    days_simulated = int(m)
+    for i in range(days_simulated):
+        month = i
+        total_coin = percent_coin_owned+(initial_people_involved + (initial_people_involved * user_growth_rate))*rate_of_generation*i
+        v = total_value*(percent_coin_owned/total_coin)
+        uot_ = (initial_people_involved+(initial_people_involved * user_growth_rate*i))
+        tup = (month, uot_, v)
+        uot.append(uot_)
+        l.append(tup)
+        v_.append(v)
+
+    
     uot = pd.DataFrame(l, columns = ['Year', 'Users', '$EKO Value'])
     st.subheader('Toggle Revenue Basics')
     #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
