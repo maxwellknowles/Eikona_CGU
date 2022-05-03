@@ -241,30 +241,25 @@ if eikona_choice == "Business Model Basics":
     st.header("Business Model Basics")
     
     initial_people_involved = st.number_input('Number of initial players: ', min_value = 1, max_value = 100000000, value = 10000, step = 250)
-    user_growth_rate = st.slider('Rate of User Growth/Month: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.0, value = 0.5)
+    user_growth_rate = st.slider('Rate of User Growth/Year: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.0, value = 0.5)
     avg_min_month = st.slider('Average Minutes Walked in AR/Month: ', min_value = 0, max_value = 600, value = 300, step = 10)
     st.write('_Equivalent to ' + str(float(avg_min_month/60)) + ' hours or ' + str(avg_min_month*60) + ' seconds_')
-    rate_per_sec_AR = st.slider('$EKO generated each second in AR ad-compatible space: ', min_value = 0.001, max_value = 5.0, value = 0.01)
-    x = (avg_min_month*60)*rate_per_sec_AR
-    rate_of_generation = x #rate of $EKO per month being generated
+    #rate_per_sec_AR = st.slider('$EKO generated each second in AR ad-compatible space: ', min_value = 0.001, max_value = 5.0, value = 0.01)
 
     people_involved = initial_people_involved
 
-    #m is the amount of months it takes for The Reserve to be worth 1 dollar
-    m = (total_value/1000*percent_coin_owned-percent_coin_owned)/(rate_of_generation*people_involved*100)
-
     uot = []
     l = []
-    days_simulated = int(m)
-    for i in range(days_simulated):
-        month = i
+    for i in range(0,5):
+        year = i
         uot_ = (initial_people_involved+(initial_people_involved * user_growth_rate*i))
-        tup = (month, uot_)
+        ar_ad_time = avg_min_month*uot_
+        tup = (year, uot_, ar_ad_time)
         uot.append(uot_)
         l.append(tup)
 
     
-    uot = pd.DataFrame(l, columns = ['Year', 'Users'])
+    uot = pd.DataFrame(l, columns = ['Year', 'Users', 'AR Ad Time'])
     st.subheader('Toggle Revenue Basics')
     #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
     #server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
@@ -277,15 +272,14 @@ if eikona_choice == "Business Model Basics":
     st.subheader("Eikona Game Revenue & Ad-Eligible Users By Year")
     l = []
     for i in uot.iterrows():
-        month = float(i[1]['Year'])
+        year = float(i[1]['Year'])
         users = i[1]['Users']
-        coin = i[1]['$EKO Value']
+        ad_time = i[1]['AR Ad Time']
         revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
-        tup=(month, users, coin, revenue)
+        tup=(year, users, ad_time, revenue)
         l.append(tup)
-    eikona_business = pd.DataFrame(l, columns=['Month','Users','$EKO Value', 'Revenue ($USD)'])
-    eikona_business = eikona_business.set_index("Month")
-    eikona_user_and_revenue = eikona_business[['Users', 'Revenue ($USD)']]
-    eikona_user_and_coin = eikona_business[['Users', '$EKO Value']]
+    eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)'])
+    eikona_business = eikona_business.set_index("Year")
+    eikona_user_and_revenue = eikona_business[['Users', 'AR Ad Time', 'Revenue ($USD)']]
     st.area_chart(eikona_user_and_revenue)
 
