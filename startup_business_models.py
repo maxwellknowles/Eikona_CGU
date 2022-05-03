@@ -269,7 +269,6 @@ if eikona_choice == "Business Model Basics":
     ar_ad_cpm = st.slider('Estimated Avg Number of Exchanges In-Game', 0, 50, 10)
     transaction_cost = st.slider('Transaction Fee ($USD)...', 0.00, 5.00, 0.25, 0.05)
 
-    st.subheader("Eikona Game Revenue & Ad-Eligible Users By Year")
     l = []
     for i in uot.iterrows():
         year = float(i[1]['Year'])
@@ -280,6 +279,10 @@ if eikona_choice == "Business Model Basics":
         l.append(tup)
     eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)'])
     eikona_business = eikona_business.set_index("Year")
-    eikona_user_and_revenue = eikona_business[['Users', 'AR Ad Time', 'Revenue ($USD)']]
+    eikona_user_and_revenue = eikona_business[['Users','Revenue ($USD)']]
+    eikona_ad_time = eikona_business[['AR Ad Time']]
+    st.subheader("Eikona Game Revenue & Users By Year")
     st.area_chart(eikona_user_and_revenue)
+    st.subheader("Eikona Estimated Ad Time By Year")
+    st.area_chart(eikona_ad_time)
 
