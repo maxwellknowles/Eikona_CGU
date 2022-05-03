@@ -253,7 +253,7 @@ if eikona_choice == "Business Model Basics":
     for i in range(0,5):
         year = i
         uot_ = (initial_people_involved+(initial_people_involved * user_growth_rate*i))
-        ar_ad_time = avg_min_month*uot_
+        ar_ad_time = avg_min_month*uot_*12
         tup = (year, uot_, ar_ad_time)
         uot.append(uot_)
         l.append(tup)
@@ -261,13 +261,16 @@ if eikona_choice == "Business Model Basics":
     
     uot = pd.DataFrame(l, columns = ['Year', 'Users', 'AR Ad Time'])
     st.subheader('Toggle Revenue Basics')
-    #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
-    #server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
     price_mint = st.slider('Estimated Price for User to Mint ($USD)...', 0.00, 10.00, 5.00, 0.25)
     #conversion_rate = st.slider('Estimated Share of Users Who Mint (%)...', 0, 100, 50)
     #conversion_rate = conversion_rate*0.01
     ar_ad_cpm = st.slider('Estimated Avg Number of Exchanges In-Game', 0, 50, 10)
     transaction_cost = st.slider('Transaction Fee ($USD)...', 0.00, 5.00, 0.25, 0.05)
+    st.subheader('Toggle Cost Basics')
+    cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
+    server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
+    product_engineering = st.slider('Estimated Annual Cost of Product, Design, and Engineering ($)...', 250000, 1000000, 25000, 500000)
+    HR_accounting = st.slider('Estimated Annual Cost of Outsourced HR & Accounting ($)...', 10000, 100000, 1000, 20000)
 
     l = []
     for i in uot.iterrows():
@@ -275,14 +278,16 @@ if eikona_choice == "Business Model Basics":
         users = i[1]['Users']
         ad_time = i[1]['AR Ad Time']
         revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
-        tup=(year, users, ad_time, revenue)
+        costs = cost_mint + server_cost + product_engineering + HR_accounting
+        tup=(year, users, ad_time, revenue, costs)
         l.append(tup)
-    eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)'])
+    eikona_business = pd.DataFrame(l, columns=['Year','Users', 'AR Ad Time', 'Revenue ($USD)', 'Costs'])
     eikona_business = eikona_business.set_index("Year")
-    eikona_user_and_revenue = eikona_business[['Users','Revenue ($USD)']]
+    eikona_user_and_revenue = eikona_business[['Users','Revenue ($USD)', 'Costs']]
     eikona_ad_time = eikona_business[['AR Ad Time']]
-    st.subheader("Eikona Game Revenue & Users By Year")
+    st.subheader("Eikona Game Revenue, Cost, and Users By Year")
     st.area_chart(eikona_user_and_revenue)
     st.subheader("Eikona Estimated Ad Time By Year")
     st.area_chart(eikona_ad_time)
+    
 
