@@ -241,7 +241,7 @@ if eikona_choice == "Business Model Basics":
     st.header("Business Model Basics")
     
     initial_people_involved = st.number_input('Number of initial players: ', min_value = 1, max_value = 100000000, value = 10000, step = 250)
-    user_growth_rate = st.slider('Rate of User Growth/Year: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.0, value = 0.5)
+    user_growth_rate = st.slider('Rate of User Growth/Year: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.00, value = 1.00)
     avg_min_month = st.slider('Average Minutes Walked in AR/Month: ', min_value = 0, max_value = 600, value = 300, step = 10)
     st.write('_Equivalent to ' + str(float(avg_min_month/60)) + ' hours or ' + str(avg_min_month*60) + ' seconds_')
     #rate_per_sec_AR = st.slider('$EKO generated each second in AR ad-compatible space: ', min_value = 0.001, max_value = 5.0, value = 0.01)
