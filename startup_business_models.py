@@ -250,32 +250,21 @@ if eikona_choice == "Business Model Basics":
 
     people_involved = initial_people_involved
 
-    #days = 1000
-    #total_coin = total_coin+people_involved*rate_of_generation*days
-    #v1 is the value that our coin worth
-    v1 = total_value*(percent_coin_owned/total_coin)
-    #v2 is the value of a single coin
-    v2 = v1/percent_coin_owned
-
     #m is the amount of months it takes for The Reserve to be worth 1 dollar
     m = (total_value/1000*percent_coin_owned-percent_coin_owned)/(rate_of_generation*people_involved*100)
 
-    v_ = []
     uot = []
     l = []
     days_simulated = int(m)
     for i in range(days_simulated):
         month = i
-        total_coin = percent_coin_owned+(initial_people_involved + (initial_people_involved * user_growth_rate))*rate_of_generation*i
-        v = total_value*(percent_coin_owned/total_coin)
         uot_ = (initial_people_involved+(initial_people_involved * user_growth_rate*i))
-        tup = (month, uot_, v)
+        tup = (month, uot_)
         uot.append(uot_)
         l.append(tup)
-        v_.append(v)
 
     
-    uot = pd.DataFrame(l, columns = ['Year', 'Users', '$EKO Value'])
+    uot = pd.DataFrame(l, columns = ['Year', 'Users'])
     st.subheader('Toggle Revenue Basics')
     #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
     #server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
