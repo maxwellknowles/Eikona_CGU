@@ -19,7 +19,8 @@ from googlesearch import search
 import matplotlib.pyplot as plt
 from math import e
 
-eikona_choice = option_menu("Eikona: AR-Based NFT Gaming Startup", ["Industry User Growth", "Tokenomics & Business Model"],
+st.set_page_config(page_title="Eikona: AR-Based NFT Gaming Startup", page_icon=":100:", layout="wide",initial_sidebar_state="expanded")
+eikona_choice = option_menu("Eikona: AR-Based NFT Gaming Startup", ["Industry User Growth", "Business Model Basics"],
                         icons=['activity', '123'],
                         menu_icon="calculator", default_index=0, orientation="horizontal",
                         styles={
@@ -91,11 +92,6 @@ def get_bass_model(p, q, M, period = 30):
 #Business Model
 #-------------------------
 if eikona_choice == "Industry User Growth":
-    eikona_link = "eikona.art"
-    eikona_streamlit_app = "https://share.streamlit.io/eikona-patunga/eikona-analytics/main/eikona_pitch.py"
-    st.subheader("_Some Context_")
-    st.write("Eikona — [a startup](%s) working at the nexus of AR gaming and NFTs — is currently pitching to incubators and early-stage investors. I've provided hours in product and strategy on the project, collaborating with the founder on this Streamlit app to serve as one tool in developing and visualizing Eikona's tokenomics and business model." % eikona_link)
-    st.write("You can see the latest Streamlit app for Eikona [here](%s)." % eikona_streamlit_app)
     st.title("Industry User Growth")
     st.header('_Crypto & AR-Gaming_')
 
@@ -241,110 +237,31 @@ if eikona_choice == "Industry User Growth":
         m = users_t * (p_coefficient/(p_coefficient+q_coefficient)**2) * (((1 + (q_coefficient/p_coefficient) * (e ** -(p_coefficient + q_coefficient)*t))**2) / (e ** -(p_coefficient+q_coefficient)*t))
 
 
-if eikona_choice == "Tokenomics & Business Model":
-    st.header("Tokenomics & Business Model")
+if eikona_choice == "Business Model Basics":
+    st.header("Business Model Basics")
+    
+    uot = pd.DataFrame(l, columns = ['Year', 'Users', '$EKO Value'])
+    st.subheader('Toggle Revenue Basics')
+    #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
+    #server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
+    price_mint = st.slider('Estimated Price for User to Mint ($USD)...', 0.00, 10.00, 5.00, 0.25)
+    #conversion_rate = st.slider('Estimated Share of Users Who Mint (%)...', 0, 100, 50)
+    #conversion_rate = conversion_rate*0.01
+    ar_ad_cpm = st.slider('Estimated Avg Number of Exchanges In-Game', 0, 50, 10)
+    transaction_cost = st.slider('Transaction Fee ($USD)...', 0.00, 5.00, 0.25, 0.05)
 
-    #initial values
+    st.subheader("Eikona Game Revenue & Ad-Eligible Users By Year")
+    l = []
+    for i in uot.iterrows():
+        month = float(i[1]['Year'])
+        users = i[1]['Users']
+        coin = i[1]['$EKO Value']
+        revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
+        tup=(month, users, coin, revenue)
+        l.append(tup)
+    eikona_business = pd.DataFrame(l, columns=['Month','Users','$EKO Value', 'Revenue ($USD)'])
+    eikona_business = eikona_business.set_index("Month")
+    eikona_user_and_revenue = eikona_business[['Users', 'Revenue ($USD)']]
+    eikona_user_and_coin = eikona_business[['Users', '$EKO Value']]
+    st.area_chart(eikona_user_and_revenue)
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Levers")
-        #initial values
-        total_value = st.slider('Total Market Cap ($) Starting in Reserve: ', min_value = 100000, max_value = 5000000, value = 100000, step = 100000)
-        total_coin = st.slider('Initial Circulating Supply of $EKO', min_value = 1000000000, max_value = 1000000000000, value = 1000000000, step = 1000000000)
-        percent_coin_owned = total_coin
-        #parameters
-        initial_people_involved = st.number_input('Number of initial players: ', min_value = 1, max_value = 100000000, value = 10000, step = 250)
-        user_growth_rate = st.slider('Rate of User Growth/Month: 0.01 is equal to 1 percent of initial users', min_value = 0.01, max_value = 10.0, value = 0.5)
-        avg_min_month = st.slider('Average Minutes Walked in AR/Month: ', min_value = 0, max_value = 600, value = 300, step = 10)
-        st.write('_Equivalent to ' + str(float(avg_min_month/60)) + ' hours or ' + str(avg_min_month*60) + ' seconds_')
-        rate_per_sec_AR = st.slider('$EKO generated each second in AR ad-compatible space: ', min_value = 0.001, max_value = 5.0, value = 0.01)
-        x = (avg_min_month*60)*rate_per_sec_AR
-        rate_of_generation = x #rate of $EKO per month being generated
-
-        people_involved = initial_people_involved
-
-        #days = 1000
-        #total_coin = total_coin+people_involved*rate_of_generation*days
-        #v1 is the value that our coin worth
-        v1 = total_value*(percent_coin_owned/total_coin)
-        #v2 is the value of a single coin
-        v2 = v1/percent_coin_owned
-
-        #m is the amount of months it takes for The Reserve to be worth 1 dollar
-        m = (total_value/1000*percent_coin_owned-percent_coin_owned)/(rate_of_generation*people_involved*100)
-
-
-        fig = plt.figure()
-        ax = plt.gca()
-        uot_line = plt.gca()
-
-
-
-        v_ = []
-        uot = []
-        l = []
-        days_simulated = int(m)
-        for i in range(days_simulated):
-            month = i
-            total_coin = percent_coin_owned+(initial_people_involved + (initial_people_involved * user_growth_rate))*rate_of_generation*i
-            v = total_value*(percent_coin_owned/total_coin)
-            uot_ = (initial_people_involved+(initial_people_involved * user_growth_rate*i))
-            tup = (month, uot_, v)
-            uot.append(uot_)
-            l.append(tup)
-            v_.append(v)
-
-
-    with col2:
-        st.subheader("Visualizing Tokenomics")
-        ax.plot(range(days_simulated),v_, label = 'Coin to users travellig the quota in AR over time')
-        uot_line.plot(range(days_simulated), uot, label = 'Number of Impressionable users over time')
-        plt.plot(60, uot[60], marker="x", label = 'The number of players at 5 years in: ' + str(uot[60]), markeredgecolor="red", markerfacecolor="green")
-        plt.plot(60, v_[60], marker="x", label = 'The value of the coin at 5 years in: ' + str(v_[60]), markeredgecolor="blue", markerfacecolor="blue")
-        plt.xlabel("Months to People-Owned Currency")
-        plt.ylabel("Reserve Value")
-        plt.legend()
-        plt.xlim(4,100)
-        #plt.ylim(10000, 10000000)
-        #plt.ylim = (initial_people_involved, 1000000)
-        #start, end = ax.get_ylim()
-        #plt.yticks(np.arange(start, end, 1000000000))
-
-        fig.tight_layout()
-        st.pyplot(fig)
-
-        st.write('What this shows is the amount of coin we own over time vs. The ammount of concurrent players holdings(x) plotted against the number of months at those settings it will take before The Reserves initial market supply loses value to 1$')
-
-    st.header("The Business Model")
-    col3, col4 = st.columns(2)
-    with col3:
-        uot = pd.DataFrame(l, columns = ['Year', 'Users', '$EKO Value'])
-        st.subheader('Toggle Revenue Basics')
-        #cost_mint = st.slider('Estimated Cost of User to Mint ($)...', 0.00, 5.00, 0.25, 0.05)
-        #server_cost = st.slider('Estimated Server Costs (Per User in $)...', 0.00, 1.00, 0.10, 0.01)
-        price_mint = st.slider('Estimated Price for User to Mint ($USD)...', 0.00, 10.00, 5.00, 0.25)
-        #conversion_rate = st.slider('Estimated Share of Users Who Mint (%)...', 0, 100, 50)
-        #conversion_rate = conversion_rate*0.01
-        ar_ad_cpm = st.slider('Estimated Avg Number of Exchanges In-Game', 0, 50, 10)
-        transaction_cost = st.slider('Transaction Fee ($USD)...', 0.00, 5.00, 0.25, 0.05)
-
-    with col4:
-        st.subheader("Eikona Game Revenue & Ad-Eligible Users By Year")
-        l = []
-        for i in uot.iterrows():
-            month = float(i[1]['Year'])
-            users = i[1]['Users']
-            coin = i[1]['$EKO Value']
-            revenue = users*price_mint + users*ar_ad_cpm*transaction_cost
-            tup=(month, users, coin, revenue)
-            l.append(tup)
-        eikona_business = pd.DataFrame(l, columns=['Month','Users','$EKO Value', 'Revenue ($USD)'])
-        eikona_business = eikona_business.set_index("Month")
-        eikona_user_and_revenue = eikona_business[['Users', 'Revenue ($USD)']]
-        eikona_user_and_coin = eikona_business[['Users', '$EKO Value']]
-        st.area_chart(eikona_user_and_revenue)
-
-    st.subheader("Eikona inching toward people-owned currency only comes with growth in valuable AR ad-eligible userbase...")
-    st.area_chart(eikona_user_and_coin)
